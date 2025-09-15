@@ -24,21 +24,20 @@ def get_session():
     with Session(engine) as session:
         yield session
 
-
 SessionDep = Annotated[Session, Depends(get_session)]
 
 app = FastAPI()
 
 @app.on_event("startup")
-def on_startup():
+async def on_startup():
     create_db_and_tables()
 
 @app.get("/")
-def root():
+async def root():
     return {"message": "Hello World"}
 
 @app.get("/todos/")
-def read_todos(
+async def read_todos(
     session: SessionDep,
     offset: int = 0,
     limit: Annotated[int, Query(le=100)] = 100,
@@ -47,21 +46,21 @@ def read_todos(
     return todos
 
 @app.post("/todos/")
-def create_todo(todo: Todo, session: SessionDep) -> Todo:
+async def create_todo(todo: Todo, session: SessionDep) -> Todo:
     session.add(todo)
     session.commit()
     session.refresh(todo)
     return todo
 
 @app.get("/todos/{todo_id}")
-def read_todo(todo_id: int, session: SessionDep) -> Todo:
+async def read_todo(todo_id: int, session: SessionDep) -> Todo:
     todo = session.get(Todo, todo_id)
     if not todo:
         raise HTTPException(status_code=404, detail="Todo not found")
     return todo
 
 @app.delete("/todos/{todo_id}")
-def delete_todo(todo_id: int, session: SessionDep):
+async def delete_todo(todo_id: int, session: SessionDep):
     todo = session.get(Todo, todo_id)
     if not todo:
         raise HTTPException(status_code=404, detail="Todo not found")

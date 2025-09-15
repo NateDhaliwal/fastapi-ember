@@ -8,6 +8,7 @@ class Todo(SQLModel, table=True):
     title: str = Field(index=True)
     author: str = Field(index=True)
     description: str = Field(index=True)
+    done: bool | False = Field(default=False, index=True)
 
 sqlite_file_name = "database.db"
 sqlite_url = f"sqlite:///{sqlite_file_name}"

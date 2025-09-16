@@ -1,0 +1,20 @@
+<h1>Todos:</h1>
+<button {{on "click" this.changeCreateTodoState}}>
+  {{#if this.createTodoOpened}}
+    Close
+  {{else}}
+    Create todo
+  {{/if}}
+</button>
+
+{{#if this.createTodoOpened}}
+  <CreateTodo />
+{{/if}}
+
+{{#each this.model as |todoItem|}}
+  <Card
+    @title={{todoItem.title}}
+    @description={{todoItem.description}}
+    @done={{todoItem.done}}
+  />
+{{/each}}

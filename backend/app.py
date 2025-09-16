@@ -1,6 +1,7 @@
 from typing import Annotated
 
 from fastapi import Depends, FastAPI, HTTPException, Query
+from fastapi.middleware.cors import CORSMiddleware
 from sqlmodel import Field, Session, SQLModel, create_engine, select
 
 class Todo(SQLModel, table=True):
@@ -8,7 +9,7 @@ class Todo(SQLModel, table=True):
     title: str = Field(index=True)
     author: str = Field(index=True)
     description: str = Field(index=True)
-    done: bool | False = Field(default=False, index=True)
+    done: bool = Field(default=False, index=True)
 
 sqlite_file_name = "database.db"
 sqlite_url = f"sqlite:///{sqlite_file_name}"
@@ -28,6 +29,19 @@ def get_session():
 SessionDep = Annotated[Session, Depends(get_session)]
 
 app = FastAPI()
+
+origins = [
+    "https://hsncjy-4200.csb.app",
+    "https://hsncjy-4200.csb.app/"
+]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 @app.on_event("startup")
 async def on_startup():
